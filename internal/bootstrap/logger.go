@@ -17,7 +17,7 @@ func Logger(conf *config.Logger) (*logger.ZapLogger, error) {
 		WithSyslogTag(*conf.SyslogTag).
 		Build()
 	if err != nil {
-		return nil, errors.Wrap(err, "create logger")
+		return nil, errors.Wrap(err, "create logger: %s", err.Error())
 	}
 
 	return log, nil

@@ -12,7 +12,7 @@ const (
 	logMessageGetTransactionReceipt  = "ETHEREUM: GET TRANSACTION RECEIPT"
 )
 
-func emojiField(emoji string) zap.Field {
+func emojiField(emoji string) zap.Field { //nolint:unparam
 	return zap.String("emoji", emoji)
 }
 

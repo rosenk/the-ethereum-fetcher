@@ -1,12 +1,37 @@
 version: "3.9"
 
 services:
-  postgres:
+
+  limeapi:
+    container_name: limeapi
+    image: limeapi:latest
+    build: .
+    ports:
+      - "2222:2222"
+      - "5000:5000"
+      - "9090:9090"
+    depends_on:
+      - db
+    restart: on-failure
+    environment:
+      THE_ETHEREUM_FETCHER_LIME_SERVER_LISTEN_ADDRESS: 0.0.0.0:2222
+      THE_ETHEREUM_FETCHER_HEALTHCHECK_SERVER_LISTEN_ADDRESS: 0.0.0.0:5000
+      THE_ETHEREUM_FETCHER_METRICS_SERVER_LISTEN_ADDRESS: 0.0.0.0:9090
+      THE_ETHEREUM_FETCHER_ETHEREUM_ADDRESS: https://goerli.infura.io/v3/0a3ab0b86d5e4835a3b94832195f4912
+      THE_ETHEREUM_FETCHER_DB_POSTGRESQL_HOST: db
+      THE_ETHEREUM_FETCHER_DB_POSTGRESQL_PORT: 5432
+      THE_ETHEREUM_FETCHER_DB_POSTGRESQL_SSL_MODE: disable
+      THE_ETHEREUM_FETCHER_DB_POSTGRESQL_USERNAME: the-ethereum-fetcher
+      THE_ETHEREUM_FETCHER_DB_POSTGRESQL_PASSWORD: Zgahbwm+qp3GNG4R
+      THE_ETHEREUM_FETCHER_DB_POSTGRESQL_DATABASE: main
+      THE_ETHEREUM_FETCHER_DB_POSTGRESQL_SCHEMA: public
+
+  db:
     image: postgres:15.2
-    container_name: postgres_container
+    container_name: db
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: the-ethereum-fetcher
       POSTGRES_PASSWORD: Zgahbwm+qp3GNG4R
       POSTGRES_DB: main
-    ports:
-      - "5432:5432"

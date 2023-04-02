@@ -9,7 +9,7 @@ import (
 func Validator() (*validator.Validate, error) {
 	validate, err := validatorbuilder.Build()
 	if err != nil {
-		return nil, errors.Wrap(err, "create validator")
+		return nil, errors.Wrap(err, "create validator: %s", err.Error())
 	}
 
 	return validate, nil

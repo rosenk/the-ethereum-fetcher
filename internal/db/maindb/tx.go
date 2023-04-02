@@ -16,35 +16,35 @@ func (c *Client) BeginTx(ctx context.Context) (*sql.Tx, error) {
 
 	tx, err := c.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to start tx")
+		return nil, errors.Wrap(err, "failed to start tx: %s", err.Error())
 	}
 
 	return tx, nil
 }
 
-func (c *Client) CommitTx(tx *sql.Tx) error {
+func (c *Client) CommitTx(dbTx *sql.Tx) error {
 	c.logger.Info(
 		logMessageCommitTX,
 		emojiField("💽"),
 		dbNameField(c.name),
 	)
 
-	if err := tx.Commit(); err != nil {
-		return errors.Wrap(err, "failed to commit tx")
+	if err := dbTx.Commit(); err != nil {
+		return errors.Wrap(err, "failed to commit tx: %s", err.Error())
 	}
 
 	return nil
 }
 
-func (c *Client) RollbackTx(tx *sql.Tx) error {
+func (c *Client) RollbackTx(dbTx *sql.Tx) error {
 	c.logger.Info(
 		logMessageRollbackTX,
 		emojiField("💽"),
 		dbNameField(c.name),
 	)
 
-	if err := tx.Rollback(); err != nil {
-		return errors.Wrap(err, "failed to rollback tx")
+	if err := dbTx.Rollback(); err != nil {
+		return errors.Wrap(err, "failed to rollback tx: %s", err.Error())
 	}
 
 	return nil

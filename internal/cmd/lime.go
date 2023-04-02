@@ -30,7 +30,7 @@ func NewLimeCommand() *cobra.Command {
 	appCommand.RunE = func(cmd *cobra.Command, args []string) error {
 		validate, err := validatorbuilder.Build()
 		if err != nil {
-			err := errors.Wrap(err, "create config validator")
+			err := errors.Wrap(err, "create config validator: %s", err.Error())
 
 			fmt.Printf("❌ %s: %v\n", logMessageCommandError, err) //nolint:forbidigo
 
@@ -41,7 +41,7 @@ func NewLimeCommand() *cobra.Command {
 
 		conf, err := config.ReadConfig(configFilename)
 		if err != nil {
-			err := errors.Wrap(err, "read config")
+			err := errors.Wrap(err, "read config: %s", err.Error())
 
 			fmt.Printf("❌ %s: %v\n", logMessageCommandError, err) //nolint:forbidigo
 
@@ -49,7 +49,7 @@ func NewLimeCommand() *cobra.Command {
 		}
 
 		if err := validate.Struct(conf); err != nil {
-			err := errors.Wrap(err, "validate config")
+			err := errors.Wrap(err, "validate config: %s", err.Error())
 
 			fmt.Printf("❌ %s: %v\n", logMessageCommandError, err) //nolint:forbidigo
 
@@ -67,7 +67,7 @@ func NewLimeCommand() *cobra.Command {
 			WithSyslogTag(*logConfig.SyslogTag).
 			Build()
 		if err != nil {
-			err := errors.Wrap(err, "create logger")
+			err := errors.Wrap(err, "create logger: %s", err.Error())
 
 			fmt.Printf("❌ %s: %v\n", logMessageCommandError, err) //nolint:forbidigo
 
@@ -110,7 +110,7 @@ func runLimeCommand(log logger.StructuredLogger, validate *validator.Validate, c
 			logger.ErrorField(err),
 		)
 
-		return errors.Wrap(err, "main db ping")
+		return errors.Wrap(err, "main db ping: %s", err.Error())
 	}
 	defer mainDB.Close()
 
@@ -121,7 +121,7 @@ func runLimeCommand(log logger.StructuredLogger, validate *validator.Validate, c
 			logger.ErrorField(err),
 		)
 
-		return errors.Wrap(err, "main db migrate")
+		return errors.Wrap(err, "main db migrate: %s", err.Error())
 	}
 
 	ethereumClient := bootstrap.EthereumClient(log, conf.Ethereum)
@@ -134,7 +134,7 @@ func runLimeCommand(log logger.StructuredLogger, validate *validator.Validate, c
 			logger.ErrorField(err),
 		)
 
-		return errors.Wrap(err, "ethereum client connect")
+		return errors.Wrap(err, "ethereum client connect: %s", err.Error())
 	}
 
 	fetcher := bootstrap.Fetcher(
@@ -143,11 +143,17 @@ func runLimeCommand(log logger.StructuredLogger, validate *validator.Validate, c
 		ethereumClient,
 	)
 
+	jwt := bootstrap.JWT(
+		log,
+		conf.JWT,
+	)
+
 	limeServer := bootstrap.LimeServer(
 		log,
 		validate,
 		mainDB,
 		fetcher,
+		jwt,
 		conf.Lime,
 	)
 
@@ -176,7 +182,7 @@ func runLimeCommand(log logger.StructuredLogger, validate *validator.Validate, c
 			logger.ErrorField(err),
 		)
 
-		return errors.Wrap(err, "task group exits with error")
+		return errors.Wrap(err, "task group exits with error: %s", err.Error())
 	}
 
 	log.Info(

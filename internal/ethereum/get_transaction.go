@@ -24,17 +24,17 @@ func (c *Client) GetTransaction(ctx context.Context, txHash common.Hash) (*Trans
 	transaction, _, err := c.client.TransactionByHash(ctx, hash)
 	if err != nil {
 		if errors.Is(err, ethereum.NotFound) {
-			return nil, nil
+			return nil, nil //nolint:nilnil
 		}
 
-		return nil, errors.Wrap(err, "failed to get transaction %v", txHash)
+		return nil, errors.Wrap(err, "failed to get transaction %v: %s", txHash, err.Error())
 	}
 
 	signer := types.LatestSignerForChainID(transaction.ChainId())
 
 	sender, err := types.Sender(signer, transaction)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get 'from' address")
+		return nil, errors.Wrap(err, "failed to get 'from' address: %s", err.Error())
 	}
 
 	result := &Transaction{

@@ -29,7 +29,7 @@ func (c *Client) Connect(ctx context.Context) error {
 
 	client, err := ethclient.DialContext(ctx, c.address)
 	if err != nil {
-		return errors.Wrap(err, "failed to connect to ethereum node")
+		return errors.Wrap(err, "failed to connect to ethereum node: %s", err.Error())
 	}
 
 	c.client = client

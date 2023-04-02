@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/pkg/errors"
+	"github.com/sumup-oss/go-pkgs/errors"
 )
 
 const (
@@ -22,12 +22,12 @@ func (w *Wrapper) renderResponse(writer http.ResponseWriter, response *HTTPRespo
 
 	data, err := json.Marshal(response.body)
 	if err != nil {
-		return errors.Wrap(err, "failed to marshal response body")
+		return errors.Wrap(err, "failed to marshal response body: %s", err.Error())
 	}
 
 	_, err = writer.Write(data)
 	if err != nil {
-		return errors.Wrap(err, "failed to write response body")
+		return errors.Wrap(err, "failed to write response body: %s", err.Error())
 	}
 
 	return nil

@@ -22,6 +22,12 @@ func (w *Wrapper) Wrap(controllerFunc ControllerFunc) http.HandlerFunc {
 	return func(responseWriter http.ResponseWriter, httpRequest *http.Request) {
 		responseData, err := controllerFunc(httpRequest)
 		if err != nil {
+			w.logger.Error(
+				logMessageControllerError,
+				emojiField("🏦❌"),
+				logger.ErrorField(err),
+			)
+
 			if err := w.renderError(responseWriter, err); err != nil {
 				w.logger.Error(
 					logMessageRenderError,

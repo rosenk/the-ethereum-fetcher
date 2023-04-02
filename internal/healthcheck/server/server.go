@@ -75,5 +75,5 @@ func (hc *Server) Run(ctx context.Context) error {
 		)
 	}
 
-	return errors.Wrap(err, "health check stopped")
+	return errors.Wrap(err, "health check stopped: %s", err.Error())
 }

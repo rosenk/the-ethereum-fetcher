@@ -23,7 +23,7 @@ func NewBuilder() *Builder {
 		stdoutEnabled:  true,
 		syslogEnabled:  false,
 		syslogFacility: "LOCAL0",
-		syslogTag:      "payments-finalizer-3000",
+		syslogTag:      "the-ethereum-fetcher",
 	}
 }
 
@@ -80,7 +80,7 @@ func (b *Builder) Build() (*logger.ZapLogger, error) {
 		Fields:         b.fields,
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to build logger")
+		return nil, errors.Wrap(err, "failed to build logger: %s", err.Error())
 	}
 
 	return log, nil

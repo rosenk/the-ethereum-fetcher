@@ -2,7 +2,7 @@ package response
 
 import "math/big"
 
-type GetETH struct {
+type TransactionsList struct {
 	TransactionHash   string   `json:"transactionHash"`
 	TransactionStatus uint64   `json:"transactionStatus"`
 	BlockHash         string   `json:"blockHash"`

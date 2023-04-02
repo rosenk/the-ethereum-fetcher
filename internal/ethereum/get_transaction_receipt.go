@@ -27,7 +27,7 @@ func (c *Client) GetTransactionReceipt(ctx context.Context, txHash common.Hash) 
 
 	receipt, err := c.client.TransactionReceipt(ctx, hash)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get transaction receipt %v", txHash)
+		return nil, errors.Wrap(err, "failed to get transaction receipt %v: %s", txHash, err.Error())
 	}
 
 	result := &TransactionReceipt{

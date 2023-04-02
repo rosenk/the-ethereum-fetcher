@@ -11,12 +11,12 @@ import (
 func DecodeRLPEncodedHashes(encodedHashesHex string) ([]common.Hash, error) {
 	encodedHashes, err := hex.DecodeString(encodedHashesHex)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to decode hex encoded hashes")
+		return nil, errors.Wrap(err, "failed to decode hex encoded hashes: %s", err.Error())
 	}
 
 	var decodedHashBytes [][]byte
 	if err := rlp.DecodeBytes(encodedHashes, &decodedHashBytes); err != nil {
-		return nil, errors.Wrap(err, "failed to decode RLP encoded hashes")
+		return nil, errors.Wrap(err, "failed to decode RLP encoded hashes: %s", err.Error())
 	}
 
 	decodedHashes := make([]common.Hash, len(decodedHashBytes))

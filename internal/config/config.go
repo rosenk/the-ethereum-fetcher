@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	envPrefix = "slowpay"
-	configDir = "slowpay"
+	envPrefix = "the-ethereum-fetcher"
+	configDir = "the-ethereum-fetcher"
 )
 
 // force_shutdown_timeout
@@ -22,6 +22,7 @@ type Config struct {
 	Shutdown    *Shutdown    `mapstructure:"shutdown"    json:"shutdown"    validate:"required"`
 	DB          *DB          `mapstructure:"db"          json:"db"          validate:"required"`
 	Ethereum    *Ethereum    `mapstructure:"ethereum"    json:"ethereum"    validate:"required"`
+	JWT         *JWT         `mapstructure:"jwt"         json:"jwt"         validate:"required"`
 	Lime        *Lime        `mapstructure:"lime"        json:"lime"        validate:"required"`
 }
 
@@ -29,12 +30,12 @@ func ReadConfig(filename string) (*Config, error) {
 	setOptions(filename)
 
 	if err := viper.ReadInConfig(); err != nil {
-		return nil, errors.Wrap(err, "read config")
+		return nil, errors.Wrap(err, "read config: %s", err.Error())
 	}
 
 	config := Config{} //nolint:exhaustruct
 	if err := viper.Unmarshal(&config); err != nil {
-		return nil, errors.Wrap(err, "unmarshal config")
+		return nil, errors.Wrap(err, "unmarshal config: %s", err.Error())
 	}
 
 	return &config, nil

@@ -46,6 +46,9 @@ db:
         initial_connection_ping: true
 ethereum:
     address: "https://goerli.infura.io/v3/0a3ab0b86d5e4835a3b94832195f4912"
+jwt:
+    duration: "15m"
+    signing_key: "Zgahbwm+qp3GNG4R2"
 lime:
     server:
         listen_address: "0.0.0.0:2222"

@@ -77,5 +77,5 @@ func (s *Server) Run(ctx context.Context) error {
 	close(doneCh)
 	waitGroup.Wait()
 
-	return errors.Wrap(err, "metrics server stopped")
+	return errors.Wrap(err, "metrics server stopped: %s", err.Error())
 }

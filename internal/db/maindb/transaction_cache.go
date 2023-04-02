@@ -11,7 +11,7 @@ import (
 	"github.com/sumup-oss/go-pkgs/logger"
 )
 
-func (c *Client) LockTransactionCache(ctx context.Context, tx *sql.Tx, hash common.Hash) error {
+func (c *Client) LockTransactionCache(ctx context.Context, dbTx *sql.Tx, hash common.Hash) error {
 	c.logger.Info(
 		logMessageLockTransactionCache,
 		emojiField("💽"),
@@ -19,15 +19,19 @@ func (c *Client) LockTransactionCache(ctx context.Context, tx *sql.Tx, hash comm
 		transactionHashField(hash),
 	)
 
-	_, err := tx.ExecContext(ctx, "SELECT pg_advisory_xact_lock($1)", hash.Big().Int64())
+	_, err := dbTx.ExecContext(ctx, "SELECT pg_advisory_xact_lock($1)", hash.Big().Int64())
 	if err != nil {
-		return errors.Wrap(err, "failed to lock transaction")
+		return errors.Wrap(err, "failed to lock transaction: %s", err.Error())
 	}
 
 	return nil
 }
 
-func (c *Client) GetTransactionCache(ctx context.Context, tx *sql.Tx, hash common.Hash) (*ethereum.TransactionOverview, error) {
+func (c *Client) GetTransactionCache(
+	ctx context.Context,
+	dbTx *sql.Tx,
+	hash common.Hash,
+) (*ethereum.TransactionFull, error) {
 	c.logger.Info(
 		logMessageGetTransactionCache,
 		emojiField("💽"),
@@ -37,28 +41,28 @@ func (c *Client) GetTransactionCache(ctx context.Context, tx *sql.Tx, hash commo
 
 	var data json.RawMessage
 
-	err := tx.QueryRowContext(ctx, `
+	err := dbTx.QueryRowContext(ctx, `
 		SELECT data
 		FROM transactions_cache
 		WHERE hash = $1
 	`, hash.String()).Scan(&data)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil //nolint:nilnil
 		}
 
-		return nil, errors.Wrap(err, "failed to get transaction")
+		return nil, errors.Wrap(err, "failed to get transaction: %s", err.Error())
 	}
 
-	var result ethereum.TransactionOverview
+	var result ethereum.TransactionFull
 	if err := json.Unmarshal(data, &result); err != nil {
-		return nil, errors.Wrap(err, "failed to unmarshal transaction")
+		return nil, errors.Wrap(err, "failed to unmarshal transaction: %s", err.Error())
 	}
 
 	return &result, nil
 }
 
-func (c *Client) SaveTransactionCache(ctx context.Context, tx *sql.Tx, transaction ethereum.TransactionOverview) error {
+func (c *Client) SaveTransactionCache(ctx context.Context, dbTx *sql.Tx, transaction ethereum.TransactionFull) error {
 	c.logger.Info(
 		logMessageSaveTransactionCache,
 		emojiField("💽"),
@@ -68,22 +72,22 @@ func (c *Client) SaveTransactionCache(ctx context.Context, tx *sql.Tx, transacti
 
 	data, err := json.Marshal(transaction)
 	if err != nil {
-		return errors.Wrap(err, "failed to marshal transaction")
+		return errors.Wrap(err, "failed to marshal transaction: %s", err.Error())
 	}
 
-	_, err = tx.ExecContext(ctx, `
+	_, err = dbTx.ExecContext(ctx, `
 		INSERT INTO transactions_cache (hash, data, created_at, updated_at)
 		VALUES ($1, $2, NOW(), NOW())
 		ON CONFLICT (hash) DO UPDATE SET data = $2, updated_at = NOW()
 	`, transaction.Hash.String(), data)
 	if err != nil {
-		return errors.Wrap(err, "failed to save transaction")
+		return errors.Wrap(err, "failed to save transaction: %s", err.Error())
 	}
 
 	return nil
 }
 
-func (c *Client) GetAllTransactionCache(ctx context.Context) ([]ethereum.TransactionOverview, error) {
+func (c *Client) GetAllTransactionCache(ctx context.Context) ([]ethereum.TransactionFull, error) {
 	c.logger.Info(
 		logMessageGetAllTransactionCache,
 		emojiField("💽"),
@@ -95,7 +99,7 @@ func (c *Client) GetAllTransactionCache(ctx context.Context) ([]ethereum.Transac
 		FROM transactions_cache
 	`)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get all transactions")
+		return nil, errors.Wrap(err, "failed to get all transactions: %s", err.Error())
 	}
 
 	defer func(rows *sql.Rows) {
@@ -110,26 +114,26 @@ func (c *Client) GetAllTransactionCache(ctx context.Context) ([]ethereum.Transac
 		}
 	}(rows)
 
-	results := make([]ethereum.TransactionOverview, 0)
+	results := make([]ethereum.TransactionFull, 0)
 
 	for rows.Next() {
 		var data json.RawMessage
 
 		err := rows.Scan(&data)
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to scan transaction")
+			return nil, errors.Wrap(err, "failed to scan transaction: %s", err.Error())
 		}
 
-		var result ethereum.TransactionOverview
+		var result ethereum.TransactionFull
 		if err := json.Unmarshal(data, &result); err != nil {
-			return nil, errors.Wrap(err, "failed to unmarshal transaction")
+			return nil, errors.Wrap(err, "failed to unmarshal transaction: %s", err.Error())
 		}
 
 		results = append(results, result)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, errors.Wrap(err, "failed during row iteration")
+		return nil, errors.Wrap(err, "failed during row iteration: %s", err.Error())
 	}
 
 	return results, nil

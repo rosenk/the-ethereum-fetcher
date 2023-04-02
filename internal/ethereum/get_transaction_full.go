@@ -7,7 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-type TransactionOverview struct {
+type TransactionFull struct {
 	Hash            common.Hash     `json:"hash"`
 	Status          uint64          `json:"status"`
 	BlockHash       common.Hash     `json:"blockHash"`
@@ -20,7 +20,7 @@ type TransactionOverview struct {
 	Value           *big.Int        `json:"value"`
 }
 
-func (c *Client) GetTransactionOverview(ctx context.Context, txHash common.Hash) (*TransactionOverview, error) {
+func (c *Client) GetTransactionFull(ctx context.Context, txHash common.Hash) (*TransactionFull, error) {
 	c.logger.Info(
 		logMessageGetTransactionOverview,
 		transactionHashField(txHash),
@@ -33,7 +33,7 @@ func (c *Client) GetTransactionOverview(ctx context.Context, txHash common.Hash)
 	}
 
 	if commonData == nil {
-		return nil, nil
+		return nil, nil //nolint:nilnil
 	}
 
 	receiptData, err := c.GetTransactionReceipt(ctx, txHash)
@@ -41,7 +41,7 @@ func (c *Client) GetTransactionOverview(ctx context.Context, txHash common.Hash)
 		return nil, err
 	}
 
-	return &TransactionOverview{
+	return &TransactionFull{
 		Hash:            commonData.Hash,
 		Status:          receiptData.Status,
 		BlockHash:       receiptData.BlockHash,

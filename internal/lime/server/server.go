@@ -76,5 +76,5 @@ func (s *Server) Run(ctx context.Context) error {
 		)
 	}
 
-	return errors.Wrap(err, "lime stopped")
+	return errors.Wrap(err, "lime stopped: %s", err.Error())
 }

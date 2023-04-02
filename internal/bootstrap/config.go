@@ -9,12 +9,12 @@ import (
 func Config(validate *validator.Validate, configFilename string) (*config.Config, error) {
 	conf, err := config.ReadConfig(configFilename)
 	if err != nil {
-		return nil, errors.Wrap(err, "read config")
+		return nil, errors.Wrap(err, "read config: %s", err.Error())
 	}
 
 	err = validate.Struct(conf)
 	if err != nil {
-		return nil, errors.Wrap(err, "validate config")
+		return nil, errors.Wrap(err, "validate config: %s", err.Error())
 	}
 
 	return conf, nil

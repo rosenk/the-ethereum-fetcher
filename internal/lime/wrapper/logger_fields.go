@@ -5,7 +5,8 @@ import (
 )
 
 const (
-	logMessageRenderError = "ACQUIRER WRAPPER: RENDER ERROR"
+	logMessageControllerError = "LIME WRAPPER: CONTROLLER ERROR"
+	logMessageRenderError     = "LIME WRAPPER: RENDER ERROR"
 )
 
 func emojiField(emoji string) zap.Field {

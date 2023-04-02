@@ -30,7 +30,7 @@ func (c *Client) Ping() error {
 
 	err := c.db.Ping()
 	if err != nil {
-		return errors.Wrap(err, "failed to ping postgresql server")
+		return errors.Wrap(err, "failed to ping postgresql server: %s", err.Error())
 	}
 
 	return nil
@@ -45,7 +45,7 @@ func (c *Client) Close() error {
 
 	err := c.db.Close()
 	if err != nil {
-		return errors.Wrap(err, "failed to close postgresql server")
+		return errors.Wrap(err, "failed to close postgresql server: %s", err.Error())
 	}
 
 	return nil
