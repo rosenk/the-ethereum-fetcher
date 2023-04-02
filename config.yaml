@@ -1,0 +1,55 @@
+environment: "develop"
+logger:
+    level: "DEBUG"
+    encoding: "plain"
+    stdout_enabled: true
+    syslog_enabled: false
+    syslog_facility: "LOCAL0"
+    syslog_tag: "the-ethereum-fetcher"
+healthcheck:
+    server:
+        listen_address: "0.0.0.0:5000"
+        read_header_timeout: "10s"
+        read_timeout: "10s"
+        write_timeout: "10s"
+        graceful_shutdown_timeout: "15s"
+    controller:
+        ready_path: "/ready"
+        live_path: "/live"
+metrics:
+    server:
+        listen_address: "0.0.0.0:9090"
+        read_header_timeout: "10s"
+        read_timeout: "10s"
+        write_timeout: "10s"
+        graceful_shutdown_timeout: "15s"
+    controller:
+        path: "/metrics"
+shutdown:
+    forceful_shutdown_timeout: "60s"
+db:
+    name: "main"
+    postgresql:
+        host: "localhost"
+        port: 5432
+        ssl_mode: "disable"
+        username: "the-ethereum-fetcher"
+        password: "Zgahbwm+qp3GNG4R"
+        database: "main"
+        schema: "public"
+        timezone: "UTC"
+        connect_timeout_seconds: 10
+        max_idle_connections: 2
+        max_open_connections: 10
+        connection_max_lifetime: "24h"
+        connection_max_idle_time: "24h"
+        initial_connection_ping: true
+ethereum:
+    address: "https://goerli.infura.io/v3/0a3ab0b86d5e4835a3b94832195f4912"
+lime:
+    server:
+        listen_address: "0.0.0.0:2222"
+        read_header_timeout: "10s"
+        read_timeout: "10s"
+        write_timeout: "60s"
+        graceful_shutdown_timeout: "15s"

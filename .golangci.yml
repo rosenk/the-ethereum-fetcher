@@ -1,0 +1,30 @@
+run:
+  go: "1.20"
+  timeout: 5m
+output:
+  uniq-by-line: true
+  sort-results: true
+linters:
+  enable-all: true
+  disable:
+    - deadcode         # Deprecated
+    - exhaustivestruct # Deprecated
+    - golint           # Deprecated
+    - ifshort          # Deprecated
+    - interfacer       # Deprecated
+    - maligned         # Deprecated
+    - nosnakecase      # Deprecated
+    - scopelint        # Deprecated
+    - structcheck      # Deprecated
+    - varcheck         # Deprecated
+    - rowserrcheck     # Disabled because of generics
+    - sqlclosecheck    # Disabled because of generics
+    - structcheck      # Disabled because of generics
+    - wastedassign     # Disabled because of generics
+    - dupl             # Tool for code clone detection
+    - exhaustruct      # Checks if all structure fields are initialized
+    - gomoddirectives  # Manage the use of 'replace', 'retract', and 'excludes' directives in go.mod
+issues:
+  max-per-linter: 0
+  max-same-issues: 0
+  fix: false
